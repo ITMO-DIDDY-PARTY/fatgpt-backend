@@ -25,3 +25,7 @@ $ docker-compose up --build -d
 $ pip install -r requirements.txt
 $ uvicorn app:app --reload
 ```
+
+## REST API
+
+Swagger Docs may be found at: http://178.62.214.131:8000/docs
