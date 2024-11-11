@@ -2,3 +2,5 @@ openai
 fastapi
 python-multipart
 sqlmodel
+boto3
+uvicorn

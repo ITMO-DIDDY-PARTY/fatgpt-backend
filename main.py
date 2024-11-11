@@ -2,13 +2,13 @@ from openai import OpenAI
 import base64
 
 MODEL="gpt-4o-mini"
-KEY = "GPT-KEY"
+KEY = "GPT_KEY"
 client = OpenAI(api_key=KEY)
 
 def encode_image(image: bytes):
     return base64.b64encode(image).decode("utf-8")
 
-def generate_recipe_from_img(image: bytes, type: str | None):
+def generate_recipe_from_img(image: bytes, type: str | None) -> str:
     base64_image = encode_image(image)
     response = client.chat.completions.create(
         model=MODEL,

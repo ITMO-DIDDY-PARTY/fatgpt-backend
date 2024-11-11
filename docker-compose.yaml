@@ -2,6 +2,34 @@ version: '3.8'
 
 services:
   app:
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Moscow
+      - MINIO_ACCESS_KEY=AKIAIOSFODNN7TMFN41
+      - MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYTMFN41
+      - MINIO_REGION=eu-central-1
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_BUCKET_NAME=fatgpt
     build: .
     ports:
       - "7991:7991"
+    volumes:
+      - ${PWD}:/app/
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Moscow
+      - MINIO_ACCESS_KEY=AKIAIOSFODNN7TMFN41
+      - MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYTMFN41
+      - MINIO_REGION=eu-central-1
+      - MINIO_URL=http://minio:9000
+    volumes:
+      - ./data:/data
+    command: "server /data --console-address :9001"
