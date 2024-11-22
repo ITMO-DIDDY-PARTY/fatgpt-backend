@@ -41,7 +41,7 @@ class _MinioClient:
         responses = []
         for object_name in object_names:
             file_path = f"/tmp/{object_name}"
-            file = self.s3_client.get_object(Bucket=self.bucket_name, Key=object_name)
+            file = self.s3_client.get_object(Bucket=self.bucket_name, Key=file_path)
             file_dict = {
                 "file_name": object_name,
                 "path": file_path,
