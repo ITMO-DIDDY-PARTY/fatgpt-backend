@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import secrets
 from enum import Enum
+import time
 
 from sqladmin import Admin, ModelView
 from s3 import MinioClient
@@ -11,7 +12,7 @@ from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from fastapi import FastAPI, File, HTTPException, APIRouter, Response, Depends, UploadFile, status
 
-from database import Recipe, User, create_db_and_tables, engine
+from database import Recipe, User, UserActivity, create_db_and_tables, engine
 from main import generate_recipe_from_img
 
 
@@ -40,6 +41,10 @@ class UserAdminView(ModelView, model=User):
 
 class RecipeAdminView(ModelView, model=Recipe):
     column_list = [Recipe.id, Recipe.markdown, Recipe.user_id, Recipe.s3_image, Recipe.ts_created]
+
+
+class UserActivityAdminView(ModelView, model=UserActivity):
+    column_list = [UserActivity.id, UserActivity.user_id, UserActivity.recipe_id, UserActivity.ts_created, UserActivity.used_tokens, UserActivity.approximate_cost]
 
 
 admin.add_view(UserAdminView)
@@ -97,9 +102,20 @@ async def generate_recipe(
                 s3_image=str(file.filename),
             )
             session.add(recipe)
-            session.commit()
         else:
             print("Error uploading file to S3 and recipe wasn't not saved to SQLite!")
+        try:
+            activity = UserActivity(
+                user_id=user.id,  # type: ignore
+                recipe_id=recipe.id if uploaded else None,
+                ts_created=int(time.time()),
+                used_tokens = (tokens := len(rec_md) + 80) ,
+                approximate_cost = tokens * 0.0001,
+            )
+            session.add(activity)
+        except Exception as e:
+            print('Failed to save user activity: ', e)
+        session.commit()
         return RecipeResponse(markdown=rec_md)  # type: ignore
     except Exception as e:
         response.status_code = 500

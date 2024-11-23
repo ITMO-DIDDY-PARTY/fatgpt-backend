@@ -27,9 +27,18 @@ class Recipe(SQLModel, table=True):
         }
 
 
+class UserActivity(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    recipe_id: Optional[int] = Field(default=None, foreign_key="recipe.id")
+    ts_created: int = Field(default=int(time.time()))
+    used_tokens: int
+    approximate_cost: float
+
+
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 engine = create_engine(sqlite_url)
 
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    SQLModel.metadata.create_all(engine, checkfirst=True)
