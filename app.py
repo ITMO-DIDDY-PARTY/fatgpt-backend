@@ -49,6 +49,7 @@ class UserActivityAdminView(ModelView, model=UserActivity):
 
 admin.add_view(UserAdminView)
 admin.add_view(RecipeAdminView)
+admin.add_view(UserActivityAdminView)
 
 
 header_scheme = APIKeyHeader(name="x-api-key", auto_error=False)
