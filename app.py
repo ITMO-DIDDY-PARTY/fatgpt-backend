@@ -111,7 +111,7 @@ async def generate_recipe(
                 recipe_id=recipe.id if uploaded else None,
                 ts_created=int(time.time()),
                 used_tokens = (tokens := len(rec_md) + 80) ,
-                approximate_cost = tokens * 0.0001,
+                approximate_cost = tokens * 0.000001,
             )
             session.add(activity)
         except Exception as e:
