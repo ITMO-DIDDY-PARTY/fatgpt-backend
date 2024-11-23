@@ -119,6 +119,7 @@ async def generate_recipe(
         session.commit()
         return RecipeResponse(markdown=rec_md)  # type: ignore
     except Exception as e:
+        print(e)
         response.status_code = 500
         error = """# Ошибка при получении ответа от сервера. Пожалуйста, повторите позже."""
         return RecipeResponse(markdown=error)
