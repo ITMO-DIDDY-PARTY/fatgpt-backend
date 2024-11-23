@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 import secrets
 from enum import Enum
+
+from sqladmin import Admin, ModelView
 from s3 import MinioClient
 from typing import Annotated
 
@@ -29,6 +31,20 @@ app = FastAPI(
     contact={'name': 'ITMO DIDDY PARTY', 'url': 'https://github.com/ITMO-DIDDY-PARTY'},
     lifespan=lifespan,
 )
+admin = Admin(app, engine)
+
+
+class UserAdminView(ModelView, model=User):
+    column_list = [User.id, User.username]
+
+
+class RecipeAdminView(ModelView, model=Recipe):
+    column_list = [Recipe.id, Recipe.markdown, Recipe.user_id, Recipe.s3_image, Recipe.ts_created]
+
+
+admin.add_view(UserAdminView)
+admin.add_view(RecipeAdminView)
+
 
 header_scheme = APIKeyHeader(name="x-api-key", auto_error=False)
 
